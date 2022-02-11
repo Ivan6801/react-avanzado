@@ -60,10 +60,10 @@ module.exports = {
     }),
     new WebpackPwaManifestPlugin({
       name: 'Petgram - Tu app de fotos de mascotas',
-      shortname: 'Petgram 🐶',
+      shortname: 'Petgram',
       description: 'Con Petgram puedes encontrar fotos de animales domésticos my fácilmente',
       background_color: '#fff',
-      theme_color: '#b1a',
+      theme_color: '#EC262A',
       icons: [
         {
           src: path.resolve('src/assets/P.png'),
