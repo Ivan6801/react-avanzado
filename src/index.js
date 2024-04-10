@@ -7,7 +7,7 @@ import Context from './Context'
 import { App } from './App'
 
 const client = new ApolloClient({
-  uri: 'https://petgram-serve-jorge-vicuna.vercel.app/graphql',
+  uri: 'https://petgram-server-bea-beaps.vercel.app/graphql',
   request: operation => {
     const token = window.sessionStorage.getItem('token')
     const authorization = token ? `Bearer ${token}` : ''

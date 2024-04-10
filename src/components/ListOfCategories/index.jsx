@@ -10,7 +10,7 @@ function useCategoriesData () {
   useEffect(function () {
     setLoading(true)
     setTimeout(() => {
-      window.fetch('https://petgram-serve-jorge-vicuna.vercel.app/categories')
+      window.fetch('https://petgram-server-bea.beaps.now.sh/categories')
         .then(res => res.json())
         .then(response => {
           setCategories(response)

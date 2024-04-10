@@ -4,6 +4,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackPwaManifestPlugin = require('webpack-pwa-manifest')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 
+let isFirstRun = true // Flag to track the first run
+
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -70,31 +72,48 @@ module.exports = {
           sizes: [96, 128, 192, 256, 384, 512]
         }
       ]
-    }),
+    }), 
     new WorkboxWebpackPlugin.GenerateSW({
       swDest: 'service-worker.js',
       clientsClaim: true,
       skipWaiting: true,
       maximumFileSizeToCacheInBytes: 5000000,
       runtimeCaching: [
-        {
-          // eslint-disable-next-line prefer-regex-literals
-          urlPattern: new RegExp('https://(res.cloudinary.com|images.unsplash.com)'),
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'images'
-          }
-        },
-        {
-          // eslint-disable-next-line prefer-regex-literals
-          urlPattern: new RegExp('https://react-avanzado-blond.vercel.app/'),
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api'
-          }
-        }
+        // Runtime caching configuration
       ]
-    })
+    }),
+    {
+      apply: compiler => {
+        // Hook into compiler's 'done' event
+        compiler.hooks.done.tap('AfterEmitPlugin', compilation => {
+          // Check if it's the first run
+          if (isFirstRun) {
+            isFirstRun = false // Update flag
+          } else {
+            // Remove the previous GenerateSW plugin instance
+            const plugins = compiler.options.plugins
+            const generateSWIndex = plugins.findIndex(
+              plugin => plugin instanceof WorkboxWebpackPlugin.GenerateSW
+            )
+            if (generateSWIndex !== -1) {
+              plugins.splice(generateSWIndex, 1)
+            }
+            // Add a new GenerateSW plugin instance
+            plugins.push(
+              new WorkboxWebpackPlugin.GenerateSW({
+                swDest: 'service-worker.js',
+                clientsClaim: true,
+                skipWaiting: true,
+                maximumFileSizeToCacheInBytes: 5000000,
+                runtimeCaching: [
+                  // Runtime caching configuration
+                ]
+              })
+            )
+          }
+        })
+      }
+    }
   ],
   devServer: {
     historyApiFallback: true,
